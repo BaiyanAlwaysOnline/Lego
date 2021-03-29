@@ -1,24 +1,13 @@
 <template>
-  <div class="homepage-container">
-    <a-layout>
-      <a-layout-header>
-        <div class="header">
-          BY Lego
-        </div>
-      </a-layout-header>
-      <a-layout-content>
-        <div class="welcome-container"></div>
-        <div class="content-container">
-          <template-list />
-        </div>
-      </a-layout-content>
-      <a-layout-footer>Footer</a-layout-footer>
-    </a-layout>
+  <div class="content-container">
+    <template-list :list='testData' />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { useStore } from 'vuex';
+import { computed, defineComponent } from 'vue';
+import { GlobalDataProps } from '../store';
 import TemplateList from '../components/TemplateList.vue';
 
 export default defineComponent({
@@ -26,11 +15,26 @@ export default defineComponent({
   components: {
     TemplateList,
   },
+  setup() {
+    const store = useStore<GlobalDataProps>();
+    const testData = computed(() => store.state.templates.data);
+    return {
+      testData,
+    };
+  },
 });
 </script>
 
 <style lang="scss" scoped>
-  .header {
-    color: white;
-  }
+.page-title {
+  color: #fff;
+}
+.content-container {
+  background: #fff;
+  padding: 0 24px 24px 30px;
+  min-height: 85vh;
+  max-width: 1200px;
+  margin: 50px auto;
+  width: 100%;
+}
 </style>

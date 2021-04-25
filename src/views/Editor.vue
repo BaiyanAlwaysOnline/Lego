@@ -1,31 +1,96 @@
 <template>
-<div class="editor-container">
-  <a-layout>
-    <a-layout-sider width="300" style="background: yellow">
-      <div class="sidebar-container">
-        组件列表
-      </div>
-    </a-layout-sider>
-    <a-layout style="padding: 0 24px 24px">
-      <a-layout-content class="preview-container">
-        <p>画布区域</p>
-        <div class="preview-list" id="canvas-area">
-
+  <div class="editor-container">
+    <a-layout>
+      <a-layout-sider width="300" style="background: white">
+        <div class="sidebar-container">
+          组件列表
+          <component-list :list='defaultTextTemplates' @onItemClick="addItem" />
         </div>
-      </a-layout-content>
+      </a-layout-sider>
+      <a-layout style="padding: 0 24px 24px; background: gray">
+        <a-layout-content class="preview-container">
+          <p>画布区域</p>
+          <div class="preview-list" id="canvas-area">
+            <editor-component
+                v-for="component in components"
+                :id="component.id"
+                :key="component.id"
+                :isActive="component.id === (curEditorComponent && curEditorComponent.id)"
+                @onItemSelect="selectItem"
+                @onItemDelete="deleteItem"
+              >
+              <component
+                :is="component.name"
+                v-bind="component.props"
+              />
+            </editor-component>
+          </div>
+        </a-layout-content>
+      </a-layout>
+      <a-layout-sider
+        width="300"
+        style="background: white"
+        class="settings-panel"
+      >
+        组件属性
+        <props-form
+          v-if="curEditorComponent && curEditorComponent.props"
+          :props="curEditorComponent.props"
+          @change='handleChange'
+        />
+      </a-layout-sider>
     </a-layout>
-    <a-layout-sider width="300" style="background: purple" class="settings-panel">
-      组件属性
-    </a-layout-sider>
-  </a-layout>
-</div>
+  </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script lang='ts'>
+import { GlobalDataProps } from '@/store';
+import { computed, defineComponent } from 'vue';
+import { useStore } from 'vuex';
+import LText from '@/components/LText.vue';
+import ComponentList from '@/components/ComponentList.vue';
+import EditorComponent from '@/components/EditorComponent.vue';
+import PropsForm from '@/components/PropsForm.vue';
+import defaultTextTemplates from '@/defaultTextTemplates';
+import { TextComponentProps } from '@/defaultProps';
+import { ComponentData } from '@/store/editor';
 
 export default defineComponent({
   name: 'Editor',
+  components: {
+    LText,
+    ComponentList,
+    EditorComponent,
+    PropsForm,
+  },
+  setup() {
+    const store = useStore<GlobalDataProps>();
+    const components = computed<ComponentData[]>(() => store.state.editor.components);
+    const curEditorComponent = computed<ComponentData | undefined>(() => store.getters.curEditorComponent);
+    const addItem = (data: Partial<TextComponentProps>) => {
+      store.commit('addComponent', data);
+    };
+    const selectItem = (id: string) => {
+      store.commit('selectComponent', id);
+    };
+    const deleteItem = (id: string) => {
+      store.commit('deleteComponent', id);
+    };
+    const handleChange = (e: any) => {
+      console.log(e);
+      store.commit('updateComponent', e);
+    }
+
+    return {
+      components,
+      defaultTextTemplates,
+      addItem,
+      selectItem,
+      deleteItem,
+      curEditorComponent,
+      handleChange,
+    };
+  },
 });
 </script>
 

@@ -4,7 +4,7 @@
       <a-layout-sider width="300" style="background: white">
         <div class="sidebar-container">
           组件列表
-          <component-list :list="defaultTextTemplates" @onItemClick="addItem" />
+          <component-list :list="defaultTextTemplates" @addComponent="addItem" />
         </div>
       </a-layout-sider>
       <a-layout style="padding: 0 24px 24px; background: gray">
@@ -45,7 +45,6 @@
 <script lang='ts'>
 import { GlobalDataProps } from '@/store';
 import { computed, defineComponent } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
 import { useStore } from 'vuex';
 import LText from '@/components/LText.vue';
 import LImage from '@/components/LImage.vue';
@@ -74,11 +73,7 @@ export default defineComponent({
       () => store.getters.curEditorComponent
     );
     const addItem = (data: Partial<TextComponentProps>) => {
-      store.commit('addComponent', {
-        id: uuidv4(),
-        name: 'l-text',
-        props: data,
-      });
+      store.commit('addComponent', data);
     };
     const selectItem = (id: string) => {
       store.commit('selectComponent', id);

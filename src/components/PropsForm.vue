@@ -32,6 +32,7 @@ import { TextComponentProps } from '@/defaultProps';
 import { mapPropsToForms } from '@/propsMap';
 import RenderVNode from '@/components/RenderVNode.vue';
 
+// 表单props接口
 interface FormProps {
   value: string;
   valueProp: string;

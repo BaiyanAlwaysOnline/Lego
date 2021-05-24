@@ -1,4 +1,3 @@
-/* eslint-disable import/no-cycle */
 import { Module } from 'vuex';
 import { GlobalDataProps } from './index';
 

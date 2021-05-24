@@ -65,6 +65,11 @@ export interface TextComponentProps extends CommonComponentProps {
   color: string;
   backgroundColor: string;
 }
+
+export interface ImageComponentProps extends CommonComponentProps {
+  url: string;
+}
+
 export const textDefaultProps: TextComponentProps = {
   // basic props - font styles
   text: '正文内容',
@@ -80,14 +85,21 @@ export const textDefaultProps: TextComponentProps = {
   ...commonDefaultProps,
 };
 
-// eslint-disable-next-line arrow-body-style
-export const transformToComponentProps = (props: TextComponentProps) => {
+export const imageDefaultProps = {
+  src: 'test.url',
+  ...commonDefaultProps,
+}
+
+export type ComponentType = TextComponentProps | ImageComponentProps;
+
+export const transformToComponentProps = <T extends {[k: string]: any}>(props: T) => {
   return mapValues(props, (prop) => {
     return {
-      type: prop.constructor as StringConstructor,
+      type: (prop as any).constructor as StringConstructor,
       default: prop,
     }
   });
 };
 
 export const textStylePropNames = without(Object.keys(textDefaultProps), 'text', 'actionType', 'url');
+export const imageStylePropNames = without(Object.keys(imageDefaultProps), 'text', 'actionType', 'url', 'src');

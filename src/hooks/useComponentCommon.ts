@@ -1,8 +1,8 @@
 import { pick } from 'lodash-es';
 import { computed } from 'vue';
-import { TextComponentProps } from '../defaultProps';
+import { ComponentType } from '../defaultProps';
 
-const useComponentCommon = (props: Readonly<Partial<TextComponentProps>>, picks: string[]) => {
+const useComponentCommon = (props: Readonly<Partial<ComponentType>>, picks: string[]) => {
   const styleProps = computed(() => pick(props, picks));
   const handleClick = () => {
     if (props.actionType === 'url' && props.url) {

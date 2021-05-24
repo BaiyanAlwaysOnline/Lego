@@ -4,7 +4,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Module } from 'vuex';
 import { GlobalDataProps } from './index';
-import { TextComponentProps } from '../defaultProps';
 
 export interface ComponentData {
   // 组件id
@@ -46,12 +45,8 @@ const editorModule: Module<EditorProps, GlobalDataProps> = {
     curEditorComponentId: '',
   },
   mutations: {
-    addComponent(state, props: Partial<TextComponentProps>) {
-      state.components.push({
-        id: uuidv4(),
-        name: 'l-text',
-        props,
-      });
+    addComponent(state, component: ComponentData) {
+      state.components.push(component);
     },
     selectComponent(state, id: string) {
       state.curEditorComponentId = id

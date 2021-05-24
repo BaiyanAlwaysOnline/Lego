@@ -4,7 +4,7 @@
       <a-layout-sider width="300" style="background: white">
         <div class="sidebar-container">
           组件列表
-          <component-list :list='defaultTextTemplates' @onItemClick="addItem" />
+          <component-list :list="defaultTextTemplates" @onItemClick="addItem" />
         </div>
       </a-layout-sider>
       <a-layout style="padding: 0 24px 24px; background: gray">
@@ -12,17 +12,16 @@
           <p>画布区域</p>
           <div class="preview-list" id="canvas-area">
             <editor-component
-                v-for="component in components"
-                :id="component.id"
-                :key="component.id"
-                :isActive="component.id === (curEditorComponent && curEditorComponent.id)"
-                @onItemSelect="selectItem"
-                @onItemDelete="deleteItem"
-              >
-              <component
-                :is="component.name"
-                v-bind="component.props"
-              />
+              v-for="component in components"
+              :id="component.id"
+              :key="component.id"
+              :isActive="
+                component.id === (curEditorComponent && curEditorComponent.id)
+              "
+              @onItemSelect="selectItem"
+              @onItemDelete="deleteItem"
+            >
+              <component :is="component.name" v-bind="component.props" />
             </editor-component>
           </div>
         </a-layout-content>
@@ -36,7 +35,7 @@
         <props-form
           v-if="curEditorComponent && curEditorComponent.props"
           :props="curEditorComponent.props"
-          @change='handleChange'
+          @change="handleChange"
         />
       </a-layout-sider>
     </a-layout>
@@ -46,8 +45,10 @@
 <script lang='ts'>
 import { GlobalDataProps } from '@/store';
 import { computed, defineComponent } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 import { useStore } from 'vuex';
 import LText from '@/components/LText.vue';
+import LImage from '@/components/LImage.vue';
 import ComponentList from '@/components/ComponentList.vue';
 import EditorComponent from '@/components/EditorComponent.vue';
 import PropsForm from '@/components/PropsForm.vue';
@@ -58,17 +59,26 @@ import { ComponentData } from '@/store/editor';
 export default defineComponent({
   name: 'Editor',
   components: {
-    LText,
     ComponentList,
     EditorComponent,
     PropsForm,
+    LText,
+    LImage,
   },
   setup() {
     const store = useStore<GlobalDataProps>();
-    const components = computed<ComponentData[]>(() => store.state.editor.components);
-    const curEditorComponent = computed<ComponentData | undefined>(() => store.getters.curEditorComponent);
+    const components = computed<ComponentData[]>(
+      () => store.state.editor.components
+    );
+    const curEditorComponent = computed<ComponentData | undefined>(
+      () => store.getters.curEditorComponent
+    );
     const addItem = (data: Partial<TextComponentProps>) => {
-      store.commit('addComponent', data);
+      store.commit('addComponent', {
+        id: uuidv4(),
+        name: 'l-text',
+        props: data,
+      });
     };
     const selectItem = (id: string) => {
       store.commit('selectComponent', id);
@@ -77,9 +87,8 @@ export default defineComponent({
       store.commit('deleteComponent', id);
     };
     const handleChange = (e: any) => {
-      console.log(e);
       store.commit('updateComponent', e);
-    }
+    };
 
     return {
       components,
@@ -95,6 +104,10 @@ export default defineComponent({
 </script>
 
 <style>
+#canvas-area {
+  width: 373px;
+  overflow: hidden;
+}
 .editor-container .preview-container {
   padding: 24px;
   margin: 0;
